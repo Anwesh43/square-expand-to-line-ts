@@ -1,9 +1,10 @@
 const w : number = window.innerWidth
 const h : number = window.innerHeight 
-const lines : number = 6 
+const lines : number = 4
 const scGap : number = 0.02 / lines 
 const strokeFactor : number = 90 
-const sizeFactor : number = 4.9 
+const sizeFactor : number = 2.3 
+const squareSizeFactor : number = 15.9 
 const delay : number = 20 
 const backColor : string = "#bdbdbd"
 const colors : Array<string> = [
@@ -26,5 +27,45 @@ class ScaleUtil {
 
     static sinify(scale : number) : number {
         return Math.sin(scale * Math.PI)
+    }
+}
+
+class DrawingUtil {
+    
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+    
+    static drawSquareExpandFromStart(context : CanvasRenderingContext2D, scale : number) {
+        const size : number = Math.min(w, h) / sizeFactor 
+        const sf : number = ScaleUtil.sinify(scale)
+        const gap : number = size / (lines)
+        const squareSize : number = Math.min(w, h) / squareSizeFactor 
+        context.save()
+        context.translate(w / 2, h / 2)
+        context.rotate(Math.PI * ScaleUtil.divideScale(sf, lines, lines + 1))
+        for (var j = 0; j < lines; j++) {
+            const sfj : number = ScaleUtil.divideScale(sf, j, lines + 1)
+            const sfj1 : number = ScaleUtil.divideScale(sfj, 0, 2)
+            const sfj2 : number = ScaleUtil.divideScale(sfj, 1, 2)
+            const lSize : number = (gap * (j + 1)) / (lines)
+            context.save()
+            context.translate(0, size / 2 - (gap) * j)
+            context.fillRect(-squareSize * 0.5 * sfj1, -squareSize * 0.5 * sfj1, squareSize * sfj1, squareSize * sfj1)
+            DrawingUtil.drawLine(context, -lSize * sfj2, 0, lSize * sfj2, 0)
+            context.restore()
+        }
+        context.restore()
+    } 
+
+    static drawSEFSNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.strokeStyle = colors[i]
+        context.fillStyle = colors[i]
+        DrawingUtil.drawSquareExpandFromStart(context, scale)
     }
 }
