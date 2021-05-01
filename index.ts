@@ -3,7 +3,7 @@ const h : number = window.innerHeight
 const lines : number = 4
 const scGap : number = 0.02 / lines 
 const strokeFactor : number = 90 
-const sizeFactor : number = 2.3 
+const sizeFactor : number = 1.3 
 const squareSizeFactor : number = 15.9 
 const delay : number = 20 
 const backColor : string = "#bdbdbd"
@@ -54,7 +54,13 @@ class DrawingUtil {
             const lSize : number = (gap * (j + 1)) / (lines)
             context.save()
             context.translate(0, size / 2 - (gap) * j)
-            context.fillRect(-squareSize * 0.5 * sfj1, -squareSize * 0.5 * sfj1, squareSize * sfj1, squareSize * sfj1)
+            for (var k = 0; k < 2; k++) {
+                context.save()
+                context.scale(1 - 2 * k, 1)
+                context.translate(-lSize * sfj2, 0)
+                context.fillRect(-squareSize * 0.5 * sfj1, -squareSize * 0.5 * sfj1, squareSize * sfj1, squareSize * sfj1)
+                context.restore()
+            }
             DrawingUtil.drawLine(context, -lSize * sfj2, 0, lSize * sfj2, 0)
             context.restore()
         }
@@ -226,6 +232,7 @@ class Renderer {
     handleTap(cb : Function) {
         this.sefs.startUpdating(() => {
             this.animator.start(() => {
+                cb()
                 this.sefs.update(() => {
                     this.animator.stop()
                     cb()
