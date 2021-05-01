@@ -209,3 +209,24 @@ class SquareExpandFromStart {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    animator : Animator = new Animator()
+    sefs : SquareExpandFromStart = new SquareExpandFromStart()
+
+    render(context : CanvasRenderingContext2D) {
+        this.sefs.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.sefs.startUpdating(() => {
+            this.animator.start(() => {
+                this.sefs.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
